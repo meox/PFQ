@@ -851,7 +851,7 @@ namespace pfq {
          * A timeout is specified in microseconds.
          */
 
-        net_queue
+        socket_queue
         read(long int microseconds = -1)
         {
             auto q = static_cast<struct pfq_shared_queue *>(data()->shm_addr);
@@ -868,7 +868,7 @@ namespace pfq {
 #else
                 usleep(10);
                 (void)microseconds;
-                return net_queue();
+                return socket_queue();
 #endif
             }
 
@@ -886,7 +886,7 @@ namespace pfq {
                     reinterpret_cast<pfq_pkthdr *>(raw)->info.commit = rst;
             }
 
-            // swap the net_queue...
+            // swap the socket_queue...
             //
 
             data = __atomic_exchange_n(&q->rx.shinfo, ((qver+1) << (PFQ_SHARED_QUEUE_LEN_SIZE<<3)), __ATOMIC_RELAXED);
@@ -894,7 +894,7 @@ namespace pfq {
             auto queue_len = std::min( static_cast<size_t>(PFQ_SHARED_QUEUE_LEN(data))
                                       , data_->rx_slots);
 
-            return net_queue( static_cast<char *>(data_->rx_queue_addr) + (qver & 1) * data_->rx_queue_size
+            return socket_queue( static_cast<char *>(data_->rx_queue_addr) + (qver & 1) * data_->rx_queue_size
                             , data_->rx_slot_size
                             , queue_len
                             , qver);
@@ -918,7 +918,7 @@ namespace pfq {
          * It is possible to specify a timeout in microseconds.
          */
 
-        net_queue
+        socket_queue
         recv(const mutable_buffer &buff, long int microseconds = -1)
         {
             if (data_->fd == -1)
@@ -930,7 +930,7 @@ namespace pfq {
                 throw system_error("PFQ: buffer too small");
 
             memcpy(buff.first, this_queue.data(), this_queue.slot_size() * this_queue.size());
-            return net_queue(buff.first, this_queue.slot_size(), this_queue.size(), this_queue.index());
+            return socket_queue(buff.first, this_queue.slot_size(), this_queue.size(), this_queue.index());
         }
 
 

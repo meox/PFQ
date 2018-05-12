@@ -39,7 +39,7 @@ main(int argc, char *argv[])
 
 	for(;;) {
 
-                struct pfq_net_queue nq;
+                struct pfq_socket_queue nq;
 		pfq_iterator_t it, it_e;
 
 		int many = pfq_read(p, &nq, 1000000);
@@ -55,10 +55,10 @@ main(int argc, char *argv[])
 
 		printf("queue size: %zd\n", nq.len);
 
-		it = pfq_net_queue_begin(&nq);
-		it_e = pfq_net_queue_end(&nq);
+		it = pfq_socket_queue_begin(&nq);
+		it_e = pfq_socket_queue_end(&nq);
 
-		for(; it != it_e; it = pfq_net_queue_next(&nq, it))
+		for(; it != it_e; it = pfq_socket_queue_next(&nq, it))
 		{
 			int x;
 

@@ -50,7 +50,7 @@
 /*! Initialize the net queue... */
 
 static inline void
-pfq_net_queue_init(struct pfq_net_queue *nq)
+pfq_socket_queue_init(struct pfq_socket_queue *nq)
 {
 	nq->queue     = NULL;
 	nq->len	      = 0;
@@ -62,7 +62,7 @@ pfq_net_queue_init(struct pfq_net_queue *nq)
 
 static inline
 pfq_iterator_t
-pfq_net_queue_begin(struct pfq_net_queue const *nq)
+pfq_socket_queue_begin(struct pfq_socket_queue const *nq)
 {
         return nq->queue;
 }
@@ -71,7 +71,7 @@ pfq_net_queue_begin(struct pfq_net_queue const *nq)
 
 static inline
 pfq_iterator_t
-pfq_net_queue_end(struct pfq_net_queue const *nq)
+pfq_socket_queue_end(struct pfq_socket_queue const *nq)
 {
         return nq->queue + nq->len * nq->slot_size;
 }
@@ -80,7 +80,7 @@ pfq_net_queue_end(struct pfq_net_queue const *nq)
 
 static inline
 pfq_iterator_t
-pfq_net_queue_next(struct pfq_net_queue const *nq, pfq_iterator_t iter)
+pfq_socket_queue_next(struct pfq_socket_queue const *nq, pfq_iterator_t iter)
 {
         return iter + nq->slot_size;
 }
@@ -89,7 +89,7 @@ pfq_net_queue_next(struct pfq_net_queue const *nq, pfq_iterator_t iter)
 
 static inline
 pfq_iterator_t
-pfq_net_queue_prev(struct pfq_net_queue const *nq, pfq_iterator_t iter)
+pfq_socket_queue_prev(struct pfq_socket_queue const *nq, pfq_iterator_t iter)
 {
         return iter - nq->slot_size;
 }
@@ -116,7 +116,7 @@ pfq_pkt_data(pfq_iterator_t iter)
 
 static inline
 int
-pfq_pkt_ready(struct pfq_net_queue const *nq, pfq_iterator_t iter)
+pfq_pkt_ready(struct pfq_socket_queue const *nq, pfq_iterator_t iter)
 {
         return (int)(__atomic_load_n(&pfq_pkt_header(iter)->info.commit, __ATOMIC_ACQUIRE) == nq->index);
 }
@@ -549,13 +549,13 @@ extern int pfq_poll(pfq_t *q, long int microseconds /* = -1 -> infinite */);
 /*! Read packets in place. */
 /*!
  * Wait for packets and return the number of packets available.
- * References to packets are stored into the 'pfq_net_queue' data structure.
+ * References to packets are stored into the 'pfq_socket_queue' data structure.
  *
  * The memory of the socket queue is reset at the next read.
  * A timeout is specified in microseconds.
  */
 
-extern int pfq_read(pfq_t *q, struct pfq_net_queue *nq, long int microseconds);
+extern int pfq_read(pfq_t *q, struct pfq_socket_queue *nq, long int microseconds);
 
 
 /*! Receive packets in the given buffer. */
@@ -565,7 +565,7 @@ extern int pfq_read(pfq_t *q, struct pfq_net_queue *nq, long int microseconds);
  * It is possible to specify a timeout in microseconds.
  */
 
-extern int pfq_recv(pfq_t *q, void *buf, size_t buflen, struct pfq_net_queue *nq, long int microseconds);
+extern int pfq_recv(pfq_t *q, void *buf, size_t buflen, struct pfq_socket_queue *nq, long int microseconds);
 
 
 /*! Collect and process packets. */

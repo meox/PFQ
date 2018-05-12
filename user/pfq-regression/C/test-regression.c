@@ -186,7 +186,7 @@ void test_read()
 	pfq_t * q = pfq_open(64, 1024, 64, 1024);
         assert(q);
 
-	struct pfq_net_queue nq;
+	struct pfq_socket_queue nq;
         assert(pfq_read(q, &nq, 10) == -1);
 
 	assert(pfq_enable(q) == 0);

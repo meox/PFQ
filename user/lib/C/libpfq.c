@@ -21,7 +21,7 @@
  *
  ****************************************************************/
 
-#ifndef _GNU_SOURCE	
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
 
@@ -1682,7 +1682,7 @@ int pfq_vlan_reset_filter(pfq_t *q, int gid, int vid)
 
 
 int
-pfq_read(pfq_t *q, struct pfq_net_queue *nq, long int microseconds)
+pfq_read(pfq_t *q, struct pfq_socket_queue *nq, long int microseconds)
 {
 	struct pfq_shared_queue * qd = (struct pfq_shared_queue *)(q->shm_addr);
 	unsigned long int data, qver;
@@ -1733,7 +1733,7 @@ pfq_read(pfq_t *q, struct pfq_net_queue *nq, long int microseconds)
 
 
 int
-pfq_recv(pfq_t *q, void *buf, size_t buflen, struct pfq_net_queue *nq, long int microseconds)
+pfq_recv(pfq_t *q, void *buf, size_t buflen, struct pfq_socket_queue *nq, long int microseconds)
 {
 	if (buflen < (q->rx_slots * q->rx_slot_size)) {
 		return Q_ERROR(q, "PFQ: buffer too small");
@@ -1756,10 +1756,10 @@ pfq_dispatch(pfq_t *q, pfq_handler_t cb, long int microseconds, char *user)
 	if (pfq_read(q, &q->nq, microseconds) < 0)
 		return -1;
 
-	it = pfq_net_queue_begin(&q->nq);
-	it_end = pfq_net_queue_end(&q->nq);
+	it = pfq_socket_queue_begin(&q->nq);
+	it_end = pfq_socket_queue_end(&q->nq);
 
-	for(; it != it_end; it = pfq_net_queue_next(&q->nq, it))
+	for(; it != it_end; it = pfq_socket_queue_next(&q->nq, it))
 	{
 		while (!pfq_pkt_ready(&q->nq, it))
 			pfq_relax();

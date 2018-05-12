@@ -241,8 +241,8 @@ namespace test
             {
                 auto many = m_pfq.read(opt::sleep_microseconds);
 
-                pfq::net_queue::iterator it = many.begin();
-                pfq::net_queue::iterator it_e = many.end();
+                pfq::socket_queue::iterator it = many.begin();
+                pfq::socket_queue::iterator it_e = many.end();
 
                 for(; it != it_e; ++it)
                 {

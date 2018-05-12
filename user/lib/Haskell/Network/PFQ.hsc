@@ -897,12 +897,12 @@ read :: PfqHandlePtr
      -> Int         -- ^ timeout (msec)
      -> IO NetQueue
 read hdl msec =
-    allocaBytes #{size struct pfq_net_queue} $ \qptr -> do
+    allocaBytes #{size struct pfq_socket_queue} $ \qptr -> do
        pfq_read hdl qptr (fromIntegral msec) >>= throwPfqIf_ hdl (== -1)
-       NetQueue <$> #{peek struct pfq_net_queue, queue} qptr
-                <*> fmap fromIntegral (#{peek struct pfq_net_queue, len} qptr       :: IO CSize)
-                <*> fmap fromIntegral (#{peek struct pfq_net_queue, slot_size} qptr :: IO CSize)
-                <*> fmap fromIntegral (#{peek struct pfq_net_queue, index} qptr     :: IO CUInt)
+       NetQueue <$> #{peek struct pfq_socket_queue, queue} qptr
+                <*> fmap fromIntegral (#{peek struct pfq_socket_queue, len} qptr       :: IO CSize)
+                <*> fmap fromIntegral (#{peek struct pfq_socket_queue, slot_size} qptr :: IO CSize)
+                <*> fmap fromIntegral (#{peek struct pfq_socket_queue, index} qptr     :: IO CUInt)
 
 -- |Collect and process packets.
 --

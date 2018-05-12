@@ -752,7 +752,7 @@ pfq_activate_linux(pcap_t *handle)
 	handlep->q		= NULL;
 	handlep->current	= NULL;
 
-	pfq_net_queue_init(&handlep->nqueue);
+	pfq_socket_queue_init(&handlep->nqueue);
 	handlep->ifs_promisc = 0;
 
 	handle->fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -1086,22 +1086,22 @@ pfq_read_linux(pcap_t *handle, int max_packets, pcap_handler callback, u_char *u
 
         int start = handlep->packets_read;
 	pfq_iterator_t it = handlep->current;
-	struct pfq_net_queue *nq = &handlep->nqueue;
+	struct pfq_socket_queue *nq = &handlep->nqueue;
 	int n = max_packets;
 
-        if (it == pfq_net_queue_end(nq)) {
+        if (it == pfq_socket_queue_end(nq)) {
 
 		if (unlikely(pfq_read(handlep->q, nq, handlep->timeout > 0 ? handlep->timeout * 1000 : 1000000) < 0)) {
 			snprintf(handle->errbuf, sizeof(handle->errbuf), "PFQ read error");
 			return PCAP_ERROR;
 		}
-		it = handlep->current = pfq_net_queue_begin(nq);
+		it = handlep->current = pfq_socket_queue_begin(nq);
 	}
 
         /* process the queue */
 
-	for(; (max_packets <= 0 || n > 0) && (it != pfq_net_queue_end(nq))
-	    ;	it = pfq_net_queue_next(nq, it))
+	for(; (max_packets <= 0 || n > 0) && (it != pfq_socket_queue_end(nq))
+	    ;	it = pfq_socket_queue_next(nq, it))
 	{
 		struct pfq_pcap_pkthdr pcap_h;
 		struct pfq_pkthdr *h;

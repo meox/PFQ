@@ -73,10 +73,10 @@ struct pcap_pfq_linux {
 	int packets_left; /* Unhandled packets left within the block from previous call to pcap_read_linux_mmap_v3 in case of TPACKET_V3. */
 #endif
 
-	pfq_t						*q;
+	pfq_t					*q;
 	pfq_iterator_t				current;
-	struct pfq_net_queue		nqueue;
-	uint64_t					ifs_promisc;
+	struct pfq_socket_queue		        nqueue;
+	uint64_t				ifs_promisc;
 };
 
 

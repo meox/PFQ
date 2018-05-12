@@ -35,9 +35,9 @@ typedef struct pfq_data_int pfq_t;
 typedef char * pfq_iterator_t;
 
 
-/*! pfq_net_queue_t is a struct which represents a net queue. */
+/*! pfq_socket_queue_t is a struct which represents a net queue. */
 
-struct pfq_net_queue
+struct pfq_socket_queue
 {
 	pfq_iterator_t queue;		/* net queue */
 	size_t         len;		/* number of packets in the queue */
@@ -82,7 +82,7 @@ struct pfq_data_int
 	int id;
 	int gid;
 
-	struct pfq_net_queue nq;
+	struct pfq_socket_queue nq;
 };
 
 #endif /* PFQ_INT_H */

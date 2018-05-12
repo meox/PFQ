@@ -35,7 +35,7 @@ namespace pfq {
      * The memory where packets are stored is not owned by this class.
      */
 
-    class net_queue
+    class socket_queue
     {
     public:
 
@@ -45,7 +45,7 @@ namespace pfq {
 
         struct iterator : public std::iterator<std::forward_iterator_tag, pfq_pkthdr>
         {
-            friend struct net_queue::const_iterator;
+            friend struct socket_queue::const_iterator;
 
             iterator(pfq_pkthdr *h, size_t slot_size, size_t index)
             : hdr_(h), slot_size_(slot_size), index_(index)
@@ -127,7 +127,7 @@ namespace pfq {
             : hdr_(other.hdr_), slot_size_(other.slot_size_), index_(other.index_)
             {}
 
-            const_iterator(const net_queue::iterator &other)
+            const_iterator(const socket_queue::iterator &other)
             : hdr_(other.hdr_), slot_size_(other.slot_size_), index_(other.index_)
             {}
 
@@ -196,7 +196,7 @@ namespace pfq {
 
         //! Default Constructor
 
-        net_queue()
+        socket_queue()
         : addr_(nullptr)
         , slot_size_(0)
         , queue_len_(0)
@@ -206,7 +206,7 @@ namespace pfq {
         //! Constructor
         //
 
-        net_queue(void *addr, size_t slot_size, size_t queue_len, size_t index)
+        socket_queue(void *addr, size_t slot_size, size_t queue_len, size_t index)
         : addr_(addr)
         , slot_size_(slot_size)
         , queue_len_(queue_len)
@@ -215,11 +215,11 @@ namespace pfq {
 
         //! Defaulted copy constructor.
 
-        net_queue(net_queue const &) = default;
+        socket_queue(socket_queue const &) = default;
 
         //! Defaulted destructor.
 
-        ~net_queue() = default;
+        ~socket_queue() = default;
 
 
         //! Return the number of packets stored in this queue.
