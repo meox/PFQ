@@ -59,7 +59,7 @@ module Network.PFQ
        -- * Types
 
     ,  Statistics(..)
-    ,  NetQueue(..)
+    ,  SocketQueue(..)
     ,  Packet(..)
     ,  PktHdr(..)
     ,  Callback
@@ -246,7 +246,7 @@ type PfqHandlePtr = Ptr PfqHandle
 
 -- |Capture Queue handle.
 
-data NetQueue = NetQueue {
+data SocketQueue = SocketQueue {
       qPtr      :: Ptr PktHdr               -- ^ pointer to the memory mapped queue
    ,  qLen      :: {-# UNPACK #-} !Word64   -- ^ queue length
    ,  qSlotSize :: {-# UNPACK #-} !Word64   -- ^ size of a slot = pfq header + packet
@@ -469,8 +469,8 @@ throwPfqIf_ :: PfqHandlePtr
 throwPfqIf_ hdl p v = void (throwPfqIf hdl p v)
 
 
--- |Return the list of 'Packet' stored in the 'NetQueue'.
-getPackets :: NetQueue
+-- |Return the list of 'Packet' stored in the 'SocketQueue'.
+getPackets :: SocketQueue
            -> IO [Packet]
 getPackets nq =
     getPackets' (qIndex nq) (qPtr nq) (qPtr nq `plusPtr` _size) (fromIntegral $ qSlotSize nq)
@@ -888,21 +888,21 @@ setPromisc hdl name value =
 
 -- |Read packets in place.
 --
--- Wait for packets and return a 'NetQueue' descriptor.
+-- Wait for packets and return a 'SocketQueue' descriptor.
 --
 -- The memory of the socket queue is reset at the next read.
 -- A timeout is specified in microseconds.
 
 read :: PfqHandlePtr
      -> Int         -- ^ timeout (msec)
-     -> IO NetQueue
+     -> IO SocketQueue
 read hdl msec =
     allocaBytes #{size struct pfq_socket_queue} $ \qptr -> do
        pfq_read hdl qptr (fromIntegral msec) >>= throwPfqIf_ hdl (== -1)
-       NetQueue <$> #{peek struct pfq_socket_queue, queue} qptr
-                <*> fmap fromIntegral (#{peek struct pfq_socket_queue, len} qptr       :: IO CSize)
-                <*> fmap fromIntegral (#{peek struct pfq_socket_queue, slot_size} qptr :: IO CSize)
-                <*> fmap fromIntegral (#{peek struct pfq_socket_queue, index} qptr     :: IO CUInt)
+       SocketQueue <$> #{peek struct pfq_socket_queue, queue} qptr
+                   <*> fmap fromIntegral (#{peek struct pfq_socket_queue, len} qptr       :: IO CSize)
+                   <*> fmap fromIntegral (#{peek struct pfq_socket_queue, slot_size} qptr :: IO CSize)
+                   <*> fmap fromIntegral (#{peek struct pfq_socket_queue, index} qptr     :: IO CUInt)
 
 -- |Collect and process packets.
 --
@@ -1241,7 +1241,7 @@ foreign import ccall unsafe pfq_set_group_computation_from_file   :: PfqHandlePt
 foreign import ccall pfq_dispatch                   :: PfqHandlePtr -> FunPtr CPfqCallback -> CLong -> Ptr Word8 -> IO CInt
 foreign import ccall "wrapper" make_callback        :: CPfqCallback -> IO (FunPtr CPfqCallback)
 
-foreign import ccall unsafe pfq_read                :: PfqHandlePtr -> Ptr NetQueue -> CLong -> IO CInt
+foreign import ccall unsafe pfq_read                :: PfqHandlePtr -> Ptr SocketQueue -> CLong -> IO CInt
 
 foreign import ccall unsafe pfq_vlan_filters_enable :: PfqHandlePtr -> CInt -> CInt -> IO CInt
 foreign import ccall unsafe pfq_vlan_set_filter     :: PfqHandlePtr -> CInt -> CInt -> IO CInt

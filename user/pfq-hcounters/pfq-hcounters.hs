@@ -155,7 +155,7 @@ runThreads Options{..} =
 
 recvLoop :: Q.PfqHandlePtr -> State -> IO Int
 recvLoop q state = do
-    netQueue <- Q.read q 20000
-    incrCounter (fromIntegral (Q.qLen netQueue)) (sCounter state)
+    sockQueue <- Q.read q 20000
+    incrCounter (fromIntegral (Q.qLen sockQueue)) (sCounter state)
     recvLoop q state
 
